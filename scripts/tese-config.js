@@ -41,9 +41,9 @@ export const config = {
 
   // === REPOSITORY URLS ===
   repositories: {
-    backend: "https://github.com/tese-io/mercur.git",
-    storefront: "https://github.com/tese-io/b2c-marketplace-storefront.git",
-    vendorPanel: "https://github.com/tese-io/vendor-panel.git"
+    backend: "https://github.com/tese-io/tese-marketplace.git",
+    storefront: "https://github.com/tese-io/tese-marketplace.git", 
+    vendorPanel: "https://github.com/tese-io/tese-marketplace.git"
   },
 
   // === DATABASE CONFIGURATION ===
