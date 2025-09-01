@@ -41,7 +41,7 @@ export const config = {
 
   // === REPOSITORY URLS ===
   repositories: {
-    backend: "https://github.com/tese-io/tese-marketplace.git",
+    backend: "https://github.com/tese-io/tese-marketplace-backend.git",
     storefront: "https://github.com/tese-io/tese-marketplace.git", 
     vendorPanel: "https://github.com/tese-io/tese-marketplace.git"
   },
