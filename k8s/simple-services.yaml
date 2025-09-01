@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: tese-backend-lb
+  namespace: tese-marketplace
+  labels:
+    app: tese-backend
+spec:
+  type: LoadBalancer
+  selector:
+    app: tese-backend
+  ports:
+  - name: http
+    port: 9000
+    targetPort: 9000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tese-storefront-lb
+  namespace: tese-marketplace
+  labels:
+    app: tese-storefront
+spec:
+  type: LoadBalancer
+  selector:
+    app: tese-storefront
+  ports:
+  - name: http
+    port: 8000
+    targetPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tese-vendor-panel-lb
+  namespace: tese-marketplace
+  labels:
+    app: tese-vendor-panel
+spec:
+  type: LoadBalancer
+  selector:
+    app: tese-vendor-panel
+  ports:
+  - name: http
+    port: 7001
+    targetPort: 7001

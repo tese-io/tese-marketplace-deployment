@@ -1,0 +1,74 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: tese-marketplace-ingress
+  namespace: tese-marketplace
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`65.109.113.80`) && PathPrefix(`/api`)
+      kind: Rule
+      services:
+        - name: tese-backend-service
+          port: 9000
+    - match: Host(`65.109.113.80`) && PathPrefix(`/admin`)
+      kind: Rule
+      services:
+        - name: tese-backend-service
+          port: 9000
+    - match: Host(`65.109.113.80`) && PathPrefix(`/vendor`)
+      kind: Rule
+      services:
+        - name: tese-vendor-panel-service
+          port: 7001
+    - match: Host(`65.109.113.80`) && PathPrefix(`/`)
+      kind: Rule
+      services:
+        - name: tese-storefront-service
+          port: 8000
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: tese-marketplace-backend-direct
+  namespace: tese-marketplace
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`api.stage-marketplace.tese.io`)
+      kind: Rule
+      services:
+        - name: tese-backend-service
+          port: 9000
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: tese-marketplace-storefront-direct
+  namespace: tese-marketplace
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`stage-marketplace.tese.io`)
+      kind: Rule
+      services:
+        - name: tese-storefront-service
+          port: 8000
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: tese-marketplace-vendor-direct
+  namespace: tese-marketplace
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`vendor.stage-marketplace.tese.io`)
+      kind: Rule
+      services:
+        - name: tese-vendor-panel-service
+          port: 7001

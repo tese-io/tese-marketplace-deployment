@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tese-vendor-panel
+  namespace: tese-marketplace
+  labels:
+    app: tese-vendor-panel
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tese-vendor-panel
+  template:
+    metadata:
+      labels:
+        app: tese-vendor-panel
+    spec:
+      containers:
+      - name: vendor-panel
+        image: node:22-alpine
+        workingDir: /app/vendor-panel
+        command: ["/bin/sh"]
+        args: ["-c", "npm install -g serve && npm run build:preview && serve dist -s -p 7001"]
+        ports:
+        - containerPort: 7001
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: PORT
+          value: "7001"
+        - name: VITE_MEDUSA_BACKEND_URL
+          value: "http://65.109.113.80:30900"
+        - name: VITE_ALGOLIA_APPLICATION_ID
+          value: "RB10HUJV7A"
+        - name: VITE_ALGOLIA_SEARCH_API_KEY
+          value: "b145a6fd75d9b6a148a7ba0e6a92c993"
+        - name: VITE_ALGOLIA_ADMIN_API_KEY
+          value: "fcc282b0e323e896e2f00f5e30ec9903"
+        volumeMounts:
+        - name: app-source
+          mountPath: /app
+        # Temporarily disabled health checks
+        # livenessProbe:
+        #   tcpSocket:
+        #     port: 7001
+        #   initialDelaySeconds: 120
+        #   periodSeconds: 30
+        #   failureThreshold: 5
+        # readinessProbe:
+        #   tcpSocket:
+        #     port: 7001
+        #   initialDelaySeconds: 60
+        #   periodSeconds: 10
+        #   failureThreshold: 5
+      volumes:
+      - name: app-source
+        hostPath:
+          path: /root/mercur/tese-marketplace
+          type: Directory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tese-vendor-panel-service
+  namespace: tese-marketplace
+spec:
+  selector:
+    app: tese-vendor-panel
+  ports:
+  - name: http
+    port: 7001
+    targetPort: 7001
+    nodePort: 30701
+  type: NodePort

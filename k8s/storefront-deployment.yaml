@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tese-storefront
+  namespace: tese-marketplace
+  labels:
+    app: tese-storefront
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tese-storefront
+  template:
+    metadata:
+      labels:
+        app: tese-storefront
+    spec:
+      containers:
+      - name: storefront
+        image: node:22-alpine
+        workingDir: /app/storefront
+        command: ["/bin/sh"]
+        args: ["-c", "npm run build && npm start"]
+        ports:
+        - containerPort: 8000
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: PORT
+          value: "8000"
+        - name: MEDUSA_BACKEND_URL
+          value: "http://65.109.113.80:30900"
+        - name: NEXT_PUBLIC_MEDUSA_BACKEND_URL
+          value: "http://65.109.113.80:30900"
+        - name: NEXT_PUBLIC_BASE_URL
+          value: "http://65.109.113.80:30800"
+        - name: NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY
+          value: "pk_9c115fbcbef63283d5798789c01268ca875f59d5b1a009478d925905ef07b28e"
+        - name: NEXT_PUBLIC_DEFAULT_REGION
+          value: "us"
+        - name: NEXT_PUBLIC_ALGOLIA_APPLICATION_ID
+          value: "RB10HUJV7A"
+        - name: NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY
+          value: "b145a6fd75d9b6a148a7ba0e6a92c993"
+        volumeMounts:
+        - name: app-source
+          mountPath: /app
+        # Temporarily disabled health checks
+        # livenessProbe:
+        #   tcpSocket:
+        #     port: 8000
+        #   initialDelaySeconds: 120
+        #   periodSeconds: 30
+        #   failureThreshold: 5
+        # readinessProbe:
+        #   tcpSocket:
+        #     port: 8000
+        #   initialDelaySeconds: 60
+        #   periodSeconds: 10
+        #   failureThreshold: 5
+      volumes:
+      - name: app-source
+        hostPath:
+          path: /root/mercur/tese-marketplace
+          type: Directory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tese-storefront-service
+  namespace: tese-marketplace
+spec:
+  selector:
+    app: tese-storefront
+  ports:
+  - name: http
+    port: 8000
+    targetPort: 8000
+    nodePort: 30800
+  type: NodePort

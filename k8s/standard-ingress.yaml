@@ -1,0 +1,40 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tese-marketplace-ingress
+  namespace: tese-marketplace
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+  - host: stage-marketplace.tese.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: tese-storefront-service
+            port:
+              number: 8000
+  - host: api.stage-marketplace.tese.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: tese-backend-service
+            port:
+              number: 9000
+  - host: vendor.stage-marketplace.tese.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: tese-vendor-panel-service
+            port:
+              number: 7001

@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: marketplace-backend
+  namespace: tese-marketplace
+  labels:
+    app: marketplace-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: marketplace-backend
+  template:
+    metadata:
+      labels:
+        app: marketplace-backend
+    spec:
+      containers:
+      - name: backend
+        image: ghcr.io/tese-io/marketplace-backend:v2
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 9000
+        env:
+        - name: DATABASE_URL
+          value: "postgresql://neondb_owner:npg_1VGJwSL7KacF@ep-autumn-leaf-ad6kk4uq-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require"
+        - name: NODE_ENV
+          value: "production"
+        - name: PORT
+          value: "9000"
+        - name: JWT_SECRET
+          value: "tese-marketplace-jwt-secret"
+        - name: COOKIE_SECRET
+          value: "tese-marketplace-cookie-secret"
+        - name: SESSION_SECRET
+          value: "tese-marketplace-session-secret"
+        - name: MEDUSA_ADMIN_ONBOARDING_TYPE
+          value: "default"
+        - name: MEDUSA_ADMIN_ONBOARDING_FLOW
+          value: "invite_only"
+        - name: ADMIN_CORS
+          value: "http://65.109.113.80:30900,http://65.109.113.80:7000,https://admin.stage-marketplace.tese.io"
+        - name: STORE_CORS
+          value: "http://65.109.113.80:8000,https://stage-marketplace.tese.io"
+        - name: VENDOR_CORS
+          value: "http://65.109.113.80:30701,http://localhost:7001"
+        - name: AUTH_CORS
+          value: "http://65.109.113.80:30900,http://65.109.113.80:7000,http://65.109.113.80:7001,http://65.109.113.80:8000,http://65.109.113.80:30701"
+        - name: ALGOLIA_APPLICATION_ID
+          value: "RB10HUJV7A"
+        - name: ALGOLIA_APP_ID
+          value: "RB10HUJV7A"
+        - name: ALGOLIA_API_KEY
+          value: "562a4b2e30ee05141f8627713d1fca0d"
+        - name: ALGOLIA_WRITE_API_KEY
+          value: "562a4b2e30ee05141f8627713d1fca0d"
+        - name: ALGOLIA_SEARCH_API_KEY
+          value: "b145a6fd75d9b6a148a7ba0e6a92c993"
+        - name: STRIPE_SECRET_API_KEY
+          value: "sk_test_placeholder_key_for_development"
+        - name: STRIPE_CONNECTED_ACCOUNTS_WEBHOOK_SECRET
+          value: "whsec_placeholder_webhook_secret"
+        - name: RESEND_API_KEY
+          value: "re_placeholder_resend_api_key"
+        - name: RESEND_FROM_EMAIL
+          value: "noreply@tese.io"
+
+# Temporarily disabled health checks for debugging
+        # livenessProbe:
+        #   httpGet:
+        #     path: /health
+        #     port: 9000
+        #   initialDelaySeconds: 300
+        #   periodSeconds: 30
+        # readinessProbe:
+        #   httpGet:
+        #     path: /health
+        #     port: 9000
+        #   initialDelaySeconds: 180
+        #   periodSeconds: 10
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: marketplace-backend-service
+  namespace: tese-marketplace
+spec:
+  selector:
+    app: marketplace-backend
+  ports:
+  - name: http
+    port: 9000
+    targetPort: 9000
+    nodePort: 30900
+  type: NodePort
